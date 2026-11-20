@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Reetaaru — R❤️A</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--bg:#080b14;--panel:#101726;--panel2:#172238;--line:#26344d;--txt:#f2f5ff;--muted:#93a0b8;--purple:#8257f5;--blue:#398cff;--green:#32d69a}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--txt);font:15px Inter,system-ui,Segoe UI,sans-serif;height:100vh}
+button,input{font:inherit}button{cursor:pointer}.hidden{display:none!important}
+.auth-wrap{min-height:100vh;display:grid;place-items:center;padding:20px;background:radial-gradient(ellipse at 50% 0,#292052 0,transparent 55%)}
+.auth-card{width:min(430px,100%);background:#111a2a;border:1px solid var(--line);border-radius:24px;padding:30px;box-shadow:0 25px 90px #0008}
+.brand{text-align:center;margin-bottom:25px}.brand-mark{width:76px;height:76px;border-radius:24px;margin:0 auto 12px;display:grid;place-items:center;font-size:25px;font-weight:800;background:linear-gradient(135deg,#8b35ef,#277dff);box-shadow:0 8px 35px #7549f766}.brand h1{margin:0;font-size:28px;letter-spacing:.2px}.brand h1 span{color:#ff5a83}.brand p{color:var(--muted);margin:7px 0 0;font-size:13px}
+.tabs{display:flex;background:#0a1220;border-radius:12px;padding:4px;margin-bottom:20px}.tabs button{flex:1;padding:10px;border:0;border-radius:9px;color:var(--muted);background:transparent}.tabs button.active{background:#26334d;color:white}
+.field{margin:13px 0}.field label{display:block;font-size:12px;color:#b6c2d7;margin-bottom:7px}.field input{width:100%;padding:13px 14px;background:#0a1220;border:1px solid var(--line);border-radius:11px;color:white;outline:none}.field input:focus{border-color:var(--purple)}
+.primary{width:100%;border:0;border-radius:12px;padding:13px;background:linear-gradient(110deg,#824ff0,#397fff);color:white;font-weight:700;margin-top:8px}.hint,.notice{font-size:12px;color:var(--muted);line-height:1.5}.notice{margin-top:13px;min-height:18px;color:#ffb7c7}
+.app{height:100vh;display:grid;grid-template-columns:340px 1fr;max-width:1500px;margin:auto;background:var(--panel);border:1px solid #1c2940}
+.sidebar{border-right:1px solid var(--line);display:flex;flex-direction:column;min-width:0}.topbrand{height:75px;padding:0 20px;display:flex;align-items:center;gap:11px;border-bottom:1px solid var(--line)}.mini-logo{width:39px;height:39px;border-radius:13px;background:linear-gradient(135deg,#8b35ef,#277dff);display:grid;place-items:center;font-weight:800}.topbrand b{font-size:19px}.topbrand small{display:block;color:var(--muted);font-size:11px}
+.me{padding:16px 19px;display:flex;align-items:center;gap:10px}.avatar{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#a33de9,#348cff);display:grid;place-items:center;font-weight:800;flex-shrink:0}.meinfo{min-width:0;flex:1}.meinfo b{display:block;overflow:hidden;text-overflow:ellipsis}.meinfo small{color:var(--green);font-size:11px}.logout{border:1px solid var(--line);background:#18243a;color:#cbd5e7;border-radius:9px;padding:8px 10px;font-size:12px}
+.search{padding:0 17px 15px}.search input{width:100%;padding:12px;background:#0a1220;border:1px solid var(--line);border-radius:11px;color:white;outline:none}.label{padding:4px 19px 9px;color:#71819b;font-size:10px;font-weight:800;letter-spacing:1.3px}.users{overflow:auto;flex:1}.user{display:flex;align-items:center;gap:11px;padding:12px 17px;cursor:pointer;border-left:3px solid transparent}.user:hover{background:#18243a}.user.active{background:#1b2943;border-left-color:#8b68ff}.user .info{min-width:0;flex:1}.user b{display:block;font-size:14px}.user small{color:var(--muted);font-size:11px}
+.foot{padding:12px 17px;border-top:1px solid var(--line);font-size:10px;color:var(--muted)}
+.main{display:flex;flex-direction:column;min-width:0;background:radial-gradient(ellipse at 80% 0,#1b2141 0,transparent 45%),#0b1320}.chathead{height:75px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px;padding:0 23px}.chathead .details{flex:1}.chathead small{display:block;color:var(--muted);margin-top:3px;font-size:11px}.messages{flex:1;overflow:auto;padding:25px max(18px,6vw);display:flex;flex-direction:column;gap:13px}.welcome{margin:auto;text-align:center;color:var(--muted);max-width:340px}.welcome .symbol{font-size:55px}.welcome h2{color:white}.msg{max-width:min(72%,520px);display:flex;flex-direction:column;gap:4px}.msg.mine{align-self:flex-end;align-items:flex-end}.bubble{padding:11px 14px;border-radius:15px;background:#1c2a40;line-height:1.45;overflow-wrap:anywhere}.mine .bubble{background:linear-gradient(120deg,#694de0,#3478dc);border-bottom-right-radius:4px}.stamp{font-size:10px;color:#8392aa}
+.composer{display:flex;gap:9px;padding:15px 20px 19px;border-top:1px solid var(--line)}.composer input{flex:1;min-width:0;background:#0a1220;border:1px solid var(--line);border-radius:12px;padding:13px;color:white;outline:none}.composer button{width:47px;border:0;border-radius:12px;background:linear-gradient(120deg,#8251ee,#377fff);color:white;font-size:19px}
+.mobileback{display:none}
+@media(max-width:700px){.app{grid-template-columns:1fr}.sidebar{display:flex}.main{display:none}.app.chat-open .sidebar{display:none}.app.chat-open .main{display:flex}.mobileback{display:block;border:0;background:transparent;color:white;font-size:23px}.chathead{padding:0 13px}.messages{padding:18px 13px}.composer{padding:11px}.msg{max-width:86%}}
+</style></head>
+<body>
+<section id="auth" class="auth-wrap"><div class="auth-card">
+ <div class="brand"><div class="brand-mark">R<span style="color:#ff6b91">♥</span>A</div><h1>Reetaaru</h1><p>Good conversations, closer connections.</p></div>
+ <div class="tabs"><button id="loginTab" class="active" onclick="setMode('login')">Login</button><button id="signupTab" onclick="setMode('signup')">Create account</button></div>
+ <form id="authForm">
+  <div id="usernameField" class="field hidden"><label>DISPLAY NAME</label><input id="username" placeholder="Your name" maxlength="30"></div>
+  <div class="field"><label>EMAIL ADDRESS</label><input id="email" type="email" required placeholder="you@example.com"></div>
+  <div class="field"><label>PASSWORD</label><input id="password" type="password" required minlength="6" placeholder="At least 6 characters"></div>
+  <button class="primary" id="authButton">Login to Reetaaru</button>
+ </form><div id="authNotice" class="notice"></div>
+ <p class="hint">By continuing, you agree to use Reetaaru respectfully. Never share your password or verification codes.</p>
+</div></section>
+<div id="app" class="app hidden">
+ <aside class="sidebar"><div class="topbrand"><div class="mini-logo">R♥A</div><div><b>Reetaaru</b><small>Connect with everyone</small></div></div>
+ <div class="me"><div class="avatar" id="myAvatar">Y</div><div class="meinfo"><b id="myName">Your profile</b><small>● Signed in</small></div><button class="logout" onclick="logout()">Log out</button></div>
+ <div class="search"><input id="userSearch" placeholder="⌕  Find people by name..."></div><div class="label">PEOPLE ON REETAARU</div><div id="userList" class="users"></div>
+ <div class="foot">Private chats are protected by database access policies.</div></aside>
+ <main class="main"><header class="chathead"><button class="mobileback" onclick="backToPeople()">‹</button><div id="chatAvatar" class="avatar">R</div><div class="details"><b id="chatName">Welcome to Reetaaru</b><small id="chatStatus">Choose someone to start chatting</small></div></header>
+ <section id="messages" class="messages"><div class="welcome"><div class="symbol">💬</div><h2>Your conversations start here</h2><p>Find someone from the people list and send your first message.</p></div></section>
+ <form id="composer" class="composer hidden"><input id="messageText" maxlength="4000" autocomplete="off" placeholder="Write a message..."><button aria-label="Send">➤</button></form>
+ </main>
+</div>
+<script>
+const SUPABASE_URL = "https://shxiaubeelnxreuryyte.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_XAdrJafHCVLBUeqxECgJ2w_MAQn8LEZ";
+let db=null, me=null, activeUser=null, profiles=[], messageChannel=null, presenceChannel=null, mode='login';
+function setMode(m){mode=m;document.getElementById('loginTab').classList.toggle('active',m==='login');document.getElementById('signupTab').classList.toggle('active',m==='signup');document.getElementById('usernameField').classList.toggle('hidden',m!=='signup');document.getElementById('authButton').textContent=m==='login'?'Login to Reetaaru':'Create my account';document.getElementById('authNotice').textContent=''}
+function note(t){document.getElementById('authNotice').textContent=t}
+function initials(s){return (s||'?').trim().split(/\s+/).slice(0,2).map(x=>x[0]).join('').toUpperCase()}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+async function start(){
+ if(SUPABASE_URL.startsWith('YOUR_')||SUPABASE_ANON_KEY.startsWith('YOUR_')){note('Setup needed: add your Supabase Project URL and anon key in index.html. See README.');return}
+ db=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+ const {data:{session}}=await db.auth.getSession();
+ if(session) await enterApp(session.user);
+ db.auth.onAuthStateChange(async(event,session)=>{if(session&&!me)await enterApp(session.user);if(!session){me=null;document.getElementById('app').classList.add('hidden');document.getElementById('auth').classList.remove('hidden')}});
+}
+document.getElementById('authForm').addEventListener('submit',async e=>{
+ e.preventDefault();if(!db){note('Add your Supabase keys first.');return}
+ const email=document.getElementById('email').value.trim(),password=document.getElementById('password').value;
+ note('Please wait…');document.getElementById('authButton').disabled=true;
+ try{
+  if(mode==='signup'){
+   const username=document.getElementById('username').value.trim();if(!username)throw Error('Please enter a display name.');
+   const {data,error}=await db.auth.signUp({email,password,options:{data:{username}}});if(error)throw error;
+   if(!data.session){note('Account created! Check your email to confirm, then log in.');return}
+   await enterApp(data.user);
+  }else{const {data,error}=await db.auth.signInWithPassword({email,password});if(error)throw error;await enterApp(data.user)}
+ }catch(err){note(err.message||'Something went wrong.')}finally{document.getElementById('authButton').disabled=false}
+});
+async function enterApp(user){
+ me=user;document.getElementById('auth').classList.add('hidden');document.getElementById('app').classList.remove('hidden');
+ const name=user.user_metadata?.username||user.email.split('@')[0];document.getElementById('myName').textContent=name;document.getElementById('myAvatar').textContent=initials(name);
+ await loadPeople();subscribePresence();subscribeMessages();
+}
+async function logout(){if(presenceChannel)await db.removeChannel(presenceChannel);if(messageChannel)await db.removeChannel(messageChannel);await db.auth.signOut();activeUser=null;document.getElementById('app').classList.remove('chat-open')}
+async function loadPeople(){
+ const {data,error}=await db.from('profiles').select('id,username').neq('id',me.id).order('username');if(error){document.getElementById('userList').innerHTML='<p class="hint" style="padding:15px">Could not load users. Check the SQL setup.</p>';return}
+ profiles=data||[];renderPeople();
+}
+function renderPeople(){const q=document.getElementById('userSearch').value.toLowerCase();const list=profiles.filter(p=>(p.username||'').toLowerCase().includes(q));document.getElementById('userList').innerHTML=list.length?list.map(p=>`<div class="user ${activeUser?.id===p.id?'active':''}" onclick="openChat('${p.id}')"><div class="avatar">${escapeHtml(initials(p.username))}</div><div class="info"><b>${escapeHtml(p.username||'Reetaaru user')}</b><small>Tap to message</small></div></div>`).join(''):'<p class="hint" style="padding:15px">No users found yet. Invite a friend to sign up!</p>'}
+document.getElementById('userSearch').addEventListener('input',renderPeople);
+async function openChat(id){
+ activeUser=profiles.find(p=>p.id===id);if(!activeUser)return;renderPeople();document.getElementById('chatAvatar').textContent=initials(activeUser.username);document.getElementById('chatName').textContent=activeUser.username;document.getElementById('chatStatus').textContent='Reetaaru member';document.getElementById('composer').classList.remove('hidden');document.getElementById('app').classList.add('chat-open');await loadMessages();
+}
+function backToPeople(){document.getElementById('app').classList.remove('chat-open')}
+async function loadMessages(){
+ const {data,error}=await db.from('messages').select('id,sender_id,recipient_id,content,created_at').or(`and(sender_id.eq.${me.id},recipient_id.eq.${activeUser.id}),and(sender_id.eq.${activeUser.id},recipient_id.eq.${me.id})`).order('created_at');
+ if(error){console.error(error);return}renderMessages(data||[]);
+}
+function renderMessages(rows){const box=document.getElementById('messages');if(!rows.length){box.innerHTML='<div class="welcome"><div class="symbol">❤️</div><h2>Say hello!</h2><p>Your private conversation with '+escapeHtml(activeUser.username)+' starts here.</p></div>';return}
+ box.innerHTML=rows.map(m=>`<div class="msg ${m.sender_id===me.id?'mine':''}"><div class="bubble">${escapeHtml(m.content)}</div><span class="stamp">${new Date(m.created_at).toLocaleTimeString([],{hour:'numeric',minute:'2-digit'})}</span></div>`).join('');box.scrollTop=box.scrollHeight}
+document.getElementById('composer').addEventListener('submit',async e=>{e.preventDefault();if(!activeUser)return;const input=document.getElementById('messageText'),content=input.value.trim();if(!content)return;input.disabled=true;const {error}=await db.from('messages').insert({sender_id:me.id,recipient_id:activeUser.id,content});input.disabled=false;if(error){alert('Message could not be sent: '+error.message);return}input.value='';await loadMessages()});
+function subscribeMessages(){messageChannel=db.channel('messages-live').on('postgres_changes',{event:'INSERT',schema:'public',table:'messages'},payload=>{const m=payload.new;if(activeUser&&((m.sender_id===me.id&&m.recipient_id===activeUser.id)||(m.sender_id===activeUser.id&&m.recipient_id===me.id)))loadMessages()}).subscribe()}
+function subscribePresence(){presenceChannel=db.channel('online-users',{config:{presence:{key:me.id}}});presenceChannel.on('presence',{event:'sync'},()=>{}).subscribe(async status=>{if(status==='SUBSCRIBED')await presenceChannel.track({username:me.user_metadata?.username||me.email})})}
+start();
+</script></body></html>
